@@ -34,6 +34,10 @@ My focus is on:
   When embeddings matter, when they don’t, and why.  
   → [Notebook](./representation/representation_notes.ipynb)
 
+- **[Graph Neural Networks for Recommendation](./gnn/)**  
+  Message passing, scaling tradeoffs, and minimal implementations.  
+  → [Notebook](./gnn/gnn_notes.ipynb)
+
 - **[Reasoning-Driven Re-ranking with LLMs](./llm_reasoning/)**  
   Controlled use of language models in decision pipelines.  
   → [Notebook](./llm_reasoning/llm_rerank_notes.ipynb)
