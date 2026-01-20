@@ -1,4 +1,3 @@
-# Faye Voulivasi
 Senior Machine Learning Engineer
 
 Applied ML · Ranking & Personalization · Scalable Decision Systems
