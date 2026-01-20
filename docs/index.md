@@ -4,7 +4,7 @@ Senior Machine Learning Engineer
 Applied ML · Ranking & Personalization · Scalable Decision Systems
 
 ---
-
+<a id="perspective"></a>
 ## Perspective
 
 I work on machine learning problems where modeling choices directly shape
@@ -16,7 +16,7 @@ My focus is on:
 - Making tradeoffs, uncertainty, and failure modes explicit  
 
 ---
-
+<a id="areas-of-interest"></a>
 ## Areas of Interest
 
 - Ranking, Retrieval, and Recommendation  
@@ -27,7 +27,7 @@ My focus is on:
 - Generative and Agentic Modeling  
 
 ---
-
+<a id="selected-technical-notes"></a>
 ## Selected Technical Notes
 
 - **[Representation Learning in Recommendation](./representation/)**  
@@ -54,6 +54,7 @@ Each note pairs conceptual analysis with a minimal, reproducible artifact.
 
 ---
 
+<a id="reference-papers"></a>
 ## Reference Papers
 
 ### GenAI & Multimodal Foundations
@@ -107,7 +108,6 @@ Models that shape modern generative and personalization systems through represen
 
 - **A Unified Approach to Interpreting Model Predictions (SHAP)**  
   [paper](https://arxiv.org/abs/1705.07874) · [notes](paper_notes/shap)
-
 
 ## Guiding Principle
 
