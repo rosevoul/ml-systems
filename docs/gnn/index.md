@@ -140,7 +140,7 @@ real-time loops.
 ---
 
 ## Applied example
-- [gnn_toy.ipynb](../../notebooks/gnn_toy.ipynb)
+- [gnn_toy.ipynb](https://github.com/rosevoul/rec-ml-notes/blob/main/notebooks/gnn_toy.ipynb)
 
 This notebook shows:
 - Graph-only LightGCN
