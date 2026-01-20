@@ -1,0 +1,13 @@
+---
+---
+
+@import "minima";
+
+/* Slightly tighter typography, still minimal */
+.post-content, .page-content {
+  max-width: 920px;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
