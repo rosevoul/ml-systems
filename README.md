@@ -7,6 +7,6 @@ The focus is on understanding where different modeling approaches fit within
 end-to-end ranking pipelines, their tradeoffs, and practical evaluation considerations.
 
 Each section includes:
-- A short conceptual overview
-- A minimal illustrative example
+- A conceptual overview
+- An illustrative example
 - Notes on limitations and system-level implications
