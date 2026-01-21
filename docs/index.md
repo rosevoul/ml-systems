@@ -65,20 +65,14 @@ My focus is on:
 - **Efficient BackProp**  
   [paper](http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf) · [notes](./paper_notes/efficient-backprop)
 
-- **Random Forests**  
-  [paper](https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf) · [notes](./paper_notes/random-forests)
-
-- **A Few Useful Things to Know About Machine Learning**  
-  [paper](https://homes.cs.washington.edu/~pedrod/papers/cacm12.pdf) · [notes](./paper_notes/useful-things-ml)
-
 - **XGBoost: A Scalable Tree Boosting System**  
   [paper](https://arxiv.org/abs/1603.02754) · [notes](./paper_notes/xgboost)
 
-- **Adam: A Method for Stochastic Optimization**  
-  [paper](https://arxiv.org/abs/1412.6980) · [notes](./paper_notes/adam)
+- **BERT: Pre-training of Deep Bidirectional Transformers**  
+  [paper](https://arxiv.org/abs/1810.04805) · [notes](./paper_notes/bert)
 
-- **Scikit-learn: Machine Learning in Python**  
-  [paper](https://arxiv.org/abs/1201.0490) · [notes](./paper_notes/scikit-learn)
+- **A Unified Approach to Interpreting Model Predictions (SHAP)**  
+  [paper](https://arxiv.org/abs/1705.07874) · [notes](./paper_notes/shap)
 
 - **Spark: Cluster Computing with Working Sets**  
   [paper](https://www.usenix.org/system/files/conference/hotcloud10/hotcloud10-zaharia.pdf) · [notes](./paper_notes/spark)
@@ -86,8 +80,3 @@ My focus is on:
 - **Attention Is All You Need**  
   [paper](https://arxiv.org/abs/1706.03762) · [notes](./paper_notes/attention)
 
-- **BERT: Pre-training of Deep Bidirectional Transformers**  
-  [paper](https://arxiv.org/abs/1810.04805) · [notes](./paper_notes/bert)
-
-- **A Unified Approach to Interpreting Model Predictions (SHAP)**  
-  [paper](https://arxiv.org/abs/1705.07874) · [notes](./paper_notes/shap)
