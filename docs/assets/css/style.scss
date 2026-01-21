@@ -1,17 +1,17 @@
 ---
 ---
-/* 1. Import the base theme */
-@import "{{ site.theme }}";
+/* 1. Hardcoded import to prevent build failure */
+@import "jekyll-theme-slate";
 
-/* 2. Official Slate Typography (Corrected Stack) */
+/* 2. Official Slate Typography (The exact stack you wanted) */
 body {
-  background-color: #ffffff; 
+  background-color: #ffffff !important; /* Force white body */
   color: #333333;
-  /* The exact stack from the official Slate CSS */
   font-family: 'Lucida Grande', 'Calibri', Helvetica, Arial, sans-serif;
-  font-size: 14px; 
+  font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  margin: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -23,14 +23,14 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -1px;
 }
 
-/* 3. Dark Header (Monochrome) */
+/* 3. The Dark Header (Monochrome) */
 .page-header {
   background: #212121;
   background: linear-gradient(to bottom, #373737, #212121);
   background: -webkit-linear-gradient(top, #373737, #212121);
   padding: 40px 0;
   color: #ffffff;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid #000000;
 }
 
 .project-name {
@@ -46,13 +46,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .project-tagline {
   font-size: 18px;
-  /* Removed Green: Using a clean, subtle white */
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255, 0.7) !important; /* Subtle white instead of green */
   margin: 5px 0 20px 0;
   font-weight: normal;
 }
 
-/* 4. Buttons (Slate Style - Monochrome) */
+/* 4. Navigation Buttons (Slate Style) */
 .btn {
   display: inline-block;
   background: rgba(255, 255, 255, 0.05);
@@ -73,29 +72,34 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 5. Main Content Area */
 .main-content {
-  background: #ffffff;
+  background: #ffffff !important;
   padding: 40px 0;
+  min-height: 400px;
 }
 
 .main-content a {
-  color: #1565c0; /* Professional blue for links */
+  color: #1565c0; /* Professional Blue */
   text-decoration: none;
+}
+
+.main-content a:hover {
+  text-decoration: underline;
 }
 
 /* 6. Dark Footer (Monochrome) */
 .site-footer {
   background: #212121;
-  color: #888;
+  color: #888888;
   padding: 40px 0;
   margin-top: 50px;
-  border-top: 1px solid #000;
+  border-top: 1px solid #000000;
 }
 
 .site-footer a {
   color: #ffffff;
 }
 
-/* 7. Centering Logic (Slate Inner Width) */
+/* 7. Centering Logic (Matching Slate's 860px width) */
 .container {
   max-width: 860px;
   margin: 0 auto;
