@@ -1,103 +1,70 @@
 ---
 ---
-/* 1. Hardcoded import for stability */
 @import "jekyll-theme-slate";
 
-/* 2. Enlarged Typography */
+/* 1. Global Reset & Typography */
 body {
   background-color: #ffffff !important;
   color: #333333;
   font-family: 'Lucida Grande', 'Calibri', Helvetica, Arial, sans-serif;
-  font-size: 16px;            /* Increased from 14px for better legibility */
-  line-height: 1.6;           /* Added breathing room */
-  -webkit-font-smoothing: antialiased;
-  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-/* 3. Enlarged Headers (Slate Style) */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Lucida Grande', 'Calibri', Helvetica, Arial, sans-serif;
-  font-weight: bold;
-  color: #111111;
-  margin-top: 1.6em;
-  margin-bottom: 0.6em;
-  letter-spacing: -1px;       /* Keeps large fonts looking tight */
+/* 2. Remove all theme-injected lines/borders */
+h1, h2, h3, h4, h5, h6, section, .inner, #main_content_wrap {
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
-h1 { font-size: 2.25rem; }    /* ~36px */
-h2 { font-size: 1.75rem;      /* ~28px */
-     border-bottom: 1px solid #eee; 
-     padding-bottom: 0.3rem; }
-h3 { font-size: 1.35rem; }    /* ~22px */
-
-/* 4. The Dark Header Area */
+/* 3. Re-apply Slate Header (Monochrome) */
 .page-header {
   background: #212121;
   background: linear-gradient(to bottom, #373737, #212121);
-  background: -webkit-linear-gradient(top, #373737, #212121);
-  padding: 50px 0;            /* Increased padding for "larger" feel */
+  padding: 50px 0;
   color: #ffffff;
   border-bottom: 1px solid #000;
 }
 
-.project-name {
-  font-size: 42px;            /* Enlarged main title */
-  font-weight: bold;
-  margin: 0;
-}
+.project-name { font-size: 42px; font-weight: bold; margin: 0; }
+.project-tagline { font-size: 20px; color: rgba(255, 255, 255, 0.7) !important; margin-top: 10px; }
 
-.project-name a {
-  color: #ffffff !important;
-  text-decoration: none;
-}
-
-.project-tagline {
-  font-size: 20px;            /* Enlarged tagline */
-  color: rgba(255, 255, 255, 0.7) !important;
-  margin: 10px 0 25px 0;
-  font-weight: normal;
-}
-
-/* 5. Buttons (Monochrome & Bold) */
+/* 4. Navigation Buttons */
 .btn {
   display: inline-block;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 18px;
+  color: #fff !important;
   border-radius: 5px;
-  padding: 8px 18px;          /* Slightly larger buttons */
-  color: #ffffff !important;
-  font-size: 14px;
   font-weight: bold;
   text-decoration: none;
-  margin-right: 8px;
 }
 
-.btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-/* 6. Content Area */
+/* 5. Clean Main Content */
 .main-content {
   background: #ffffff !important;
   padding: 50px 0;
+  min-height: 60vh;
 }
 
-.main-content a {
-  color: #1565c0;
-  font-weight: 500;           /* Slightly bolder links for visibility */
+h2 {
+  font-size: 1.75rem;
+  color: #111;
+  border-bottom: 1px solid #eeeeee !important; /* Single clean line */
+  padding-bottom: 0.5rem;
+  margin-top: 2.5rem;
 }
 
-/* 7. Dark Footer */
+/* 6. Dark Footer */
 .site-footer {
   background: #212121;
-  color: #888888;
+  color: #888;
   padding: 50px 0;
-  margin-top: 60px;
-  border-top: 1px solid #000;
+  border-top: none !important;
 }
 
-/* 8. Container Width (Official Slate) */
 .container {
   max-width: 860px;
   margin: 0 auto;
