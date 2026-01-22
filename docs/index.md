@@ -3,14 +3,17 @@ layout: default
 title: Home
 ---
 
-## Perspective
+## About
 
 I work on machine learning systems where modeling choices shape user experience, business outcomes, and long-term system behavior.
 
 My focus is on:
 - Translating abstract models into production-ready systems  
 - Choosing the appropriate level of complexity for the problem  
-- Making tradeoffs, uncertainty, and failure modes explicit  
+- Making trade-offs, uncertainty, and failure modes explicit  
+
+I’ve shipped end-to-end ML systems, from data pipelines and modeling to deployment, monitoring, and iteration, with direct ownership of production metrics. In recent work, I owned a production ML system that drove measurable lift in engagement and tens of millions in incremental revenue.
+
 
 ## Areas of Interest
 
