@@ -27,9 +27,6 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
 <a id="selected-technical-notes"></a>
 ## Selected Technical Notes
 
-- [Metrics Showcase: Churn-Driven Discount Allocation](notebooks/churn_discount_policy_decision.ipynb)  
-  Using churn risk to decide which customers receive discounts. Focuses on decision policies, cost trade-offs, and expected value rather than model accuracy.
-
 - **[Representation Learning in Recommendation](./representation/)**  
   → [Notebook](https://github.com/rosevoul/rec-ml-notes/edit/main/docs/representation/representation_notes.ipynb)
 
@@ -44,6 +41,15 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
 
 - **[Generative Recommendation Systems](./generative_rec/)**  
   → [Notebook](https://github.com/rosevoul/rec-ml-notes/edit/main/docs/generative_rec/generative_rec_notes.ipynb)
+
+
+<a id="metrics-showcases"></a>
+## Metrics Showcases
+- [Metrics Showcase: Churn-Driven Discount Allocation](notebooks/churn_discount_policy_decision.ipynb)  
+  Using churn risk to decide which customers receive discounts. Focuses on decision policies, cost trade-offs, and expected value rather than model accuracy.
+
+- [Metrics Showcase: Recommenders in Production (Retail)](notebooks/metrics_showcase_recommenders_production_retail.ipynb)  
+  Choosing a Top-N ranking policy using business, user, and system metrics (CTR, EPM, diversity, freshness, latency) with explicit guardrails.
 
 
 <a id="reference-papers"></a>
