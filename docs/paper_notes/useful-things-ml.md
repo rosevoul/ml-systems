@@ -34,22 +34,7 @@ Paper: https://homes.cs.washington.edu/~pedrod/papers/cacm12.pdf
 
 ## Evaluation Failure That Repeats
 
-```text
-Problem Definition
-        │
-        ▼
- Data Collection ──▶ Feature Design ──▶ Model Training
-        │                   │                 │
-        │                   ▼                 ▼
-        └── Leakage / Bias  Offline Metrics  Overfitting
-                                   │
-                                   ▼
-                              Deployment
-                                   │
-                                   ▼
-                         Drift, feedback loops,
-                         metric misalignment
-```
+![Eval failure diagram](images/useful-things-ml.png)
 
 Typical sequence:
 - Dataset collected in full.
