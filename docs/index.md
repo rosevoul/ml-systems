@@ -75,6 +75,6 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
 - **A Few Useful Things to Know About Machine Learning (2012)**  
   [Paper](https://homes.cs.washington.edu/~pedrod/papers/cacm12.pdf) · [Notes](notes/useful-things-ml.md)
 
-- **Applied Math for Production ML** 
+- **Applied Math for Production ML**   
   [Notes](notes/applied-math-production-ml.md)
 
