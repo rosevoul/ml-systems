@@ -55,7 +55,7 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
   [Paper](https://arxiv.org/abs/2005.11401) · [Notes](notes/rag.md)
 
 
-  ### Recommender Systems
+### Recommender Systems
 
 - **Deep Neural Networks for YouTube Recommendations (2016)**  
   [Paper](https://research.google/pubs/pub45530/) · [Notes](notes/youtube-recsys.md)
@@ -75,6 +75,4 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
 - **A Few Useful Things to Know About Machine Learning (2012)**  
   [Paper](https://homes.cs.washington.edu/~pedrod/papers/cacm12.pdf) · [Notes](notes/useful-things-ml.md)
 
-- **Applied Math for Production ML**   
-  [Notes](notes/applied-math-production-ml.md)
 
