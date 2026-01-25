@@ -58,13 +58,13 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
 ### Recommender Systems
 
 - **Deep Neural Networks for YouTube Recommendations (2016)**  
-  [Paper](https://research.google/pubs/pub45530/) · [Notes](notes/youtube-recsys.md)
+  [Paper](https://research.google/pubs/pub45530/) · [Notes](paper_notes/youtube-two-stage-retrieval.md)
 
 - **Sampling-Bias-Corrected Neural Modeling (Two-Tower Retrieval, 2019)**  
-  [Paper](https://arxiv.org/abs/1905.13021) · [Notes](notes/two-tower-retrieval.md)
+  [Paper](https://dl.acm.org/doi/10.1145/3298689.3346996) · [Notes](paper_notes/two-tower.md)
 
 - **Deep Learning Recommendation Model (DLRM, Meta, 2019)**  
-  [Paper](https://arxiv.org/abs/1906.00091) · [Notes](notes/dlrm.md)
+  [Paper](https://arxiv.org/abs/1906.00091) · [Notes](paper_notes/dlrm.md)
 
 
 ### ML Foundations
