@@ -6,13 +6,16 @@ This paper adjusts the training loss so negative examples contribute proportiona
 
 
 ## Model Structure
+
+![Two-tower Model](images/two-tower.png)
+
 - A user tower maps user context and history to a fixed-dimensional embedding.
 - An item tower maps item features to embeddings in the same space.
 - Relevance is computed as a dot product between user and item embeddings.
 - At serving time, user embeddings are matched against a pre-built item index using ANN search.
 
 
-![Two-tower Model](images/two-tower.png)
+
 
 
 ## What Changes Compared to a Standard Two-Tower

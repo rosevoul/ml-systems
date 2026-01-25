@@ -11,6 +11,10 @@
 
 ## Model and System Structure
 
+![Youtube Two-stage Retrieval](images/youtube-two-stage-retrieval.png)
+
+
+
 - **Candidate Generation**
   - A neural network maps user context and history to a fixed-dimensional embedding.
   - Items are represented by learned embeddings in the same space.
@@ -23,9 +27,6 @@
   - Optimizes for expected watch time rather than binary engagement.
 
 Training pipelines, feature sets, and objectives are distinct between retrieval and ranking.
-
-
-![Youtube Two-stage Retrieval](images/youtube-two-stage-retrieval.png)
 
 
 ## Tradeoffs
