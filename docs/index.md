@@ -22,15 +22,15 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
 
 **Embeddings**  
 Item, user, and content embeddings for retrieval, personalization, and cold start.  
-[Behavior](technical_notebooks/recsys_behavior_embeddings.ipynb) · [User](technical_notebooks/recsys_user_embeddings.ipynb) · [Content](technical_notebooks/recsys_content_embeddings.ipynb)
+[Behavior](technical_notebooks/recsys_behavior_embeddings.md) · [User](technical_notebooks/recsys_user_embeddings.md) · [Content](technical_notebooks/recsys_content_embeddings.md)
 
 **Retrieval & Ranking**  
 Serving pipeline from candidate generation through final scoring and rules.  
-[Retrieval](technical_notebooks/recsys_retrieval.ipynb) · [Ranking](technical_notebooks/recsys_ranking.ipynb)
+[Retrieval](technical_notebooks/recsys_retrieval.md) · [Ranking](technical_notebooks/recsys_ranking.md)
 
 **GenAI Enhancements**  
 Inference-time enhancements with strict budgets and deterministic fallback.  
-[Query Context](technical_notebooks/recsys_genai_pre_retrieval.ipynb) · [LLM Reranker](technical_notebooks/recsys_genai_reranker.ipynb)
+[Query Context](technical_notebooks/recsys_genai_pre_retrieval.md) · [LLM Reranker](technical_notebooks/recsys_genai_reranker.md)
 
 **Monitoring & Safeguards**  
 Drift, segment health, ranking quality, alerting, and safe degradation.  
