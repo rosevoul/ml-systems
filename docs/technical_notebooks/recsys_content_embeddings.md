@@ -1,24 +1,38 @@
-# Content Embeddings (Text, Vision, and CLIP)
-**Scope:** Builds item embeddings from content (text/images) for retrieval and cold-start coverage. Produces vectors for the embedding store and ANN indexing. Does not personalize or rank.
+# Content Embeddings (for Retrieval)
 
-## What this component does (and does not do)
-- Generates item vectors from item content fields (title/description/images).
-- Supports multiple backends: minimal baselines and modern encoders.
+## TLDR
+This component builds item embeddings from content for retrieval. 
+For example, it turns item titles and images into vectors before any user behavior exists. 
+It runs offline, produces versioned embedding tables, and is used by ANN retrieval. 
+
+**Methods**
+- **TF-IDF + SVD:** deterministic text baseline from item titles and descriptions.
+- **Sentence-BERT:** learned text embeddings from a served model.
+- **Minimal vision baseline:** cheap image baseline to validate plumbing.
+- **ViT:** learned image embeddings from a served model.
+- **CLIP:** shared text–image embedding space.
+- **Content fusion:** combines text and image embeddings into one vector.
+
+---
+
+## What this component builds
+- Generates item embeddings from item content fields (title, description, images).
+- Supports multiple embedding methods with the same output format.
 - Produces versioned embedding artifacts consumable by retrieval.
 - Does not train rankers or apply business rules.
 
-## When this component is used
+## When this component is needed
 - Cold-start items need vectors before interaction data accrues.
-- You need semantic coverage beyond behavior-only embeddings.
-- You want multi-modal retrieval (text query → image-like items, etc.).
+- Semantic coverage is needed beyond behavior-only embeddings.
+- You want text and image retrieval to work together.
 - Embedding computation runs offline with periodic refresh.
 
-## Integration points
+## How this component fits in the retrieval flow
 
 ```
 Item catalog + content
    ↓
-Content embedding job (text/image/CLIP)
+Content embedding job (text, image, CLIP)
    ↓
 Embedding store (versioned)
    ↓
@@ -29,7 +43,7 @@ Serving retrieval / ranking
 
 Embedding versioning is the safety mechanism. Rollback is a version switch.
 
-## Example inputs / outputs
+## What goes in and what comes out
 
 Input (catalog row):
 ```json
@@ -45,31 +59,18 @@ Output:
 ```json
 {
   "item_id": 712,
-  "embedding": {"dim": 512, "norm": 1.0},
-  "content_emb_version": "content_v12"
+  "embedding": [0.031, -0.044, ...],
+  "version": "content_v12"
 }
 ```
 
-## Core implementation (handoff-grade)
+For this component, the output is processed into a fixed-size vector, L2-normalized, and versioned.
 
-### 1) Shared contracts
-All embedding backends must return fixed-dim, L2-normalized vectors.
+## How content embeddings are built
 
-```python
-import numpy as np
-
-def l2_normalize(x: np.ndarray, eps: float = 1e-12) -> np.ndarray:
-    n = np.linalg.norm(x, axis=-1, keepdims=True)
-    return x / (n + eps)
-
-class EmbeddingBackend:
-    dim: int
-    def encode_text(self, texts: list[str]) -> np.ndarray: ...
-    def encode_image(self, images: list[np.ndarray]) -> np.ndarray: ...
-```
-
-### 2) Minimal text baseline: TF‑IDF → SVD (offline-friendly)
-Use this when you need a deterministic baseline without model serving.
+### 1) Simple text baseline from item text
+**Method:** TF-IDF + SVD. 
+Deterministic offline method, for example from item titles and short descriptions.
 
 ```python
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -88,13 +89,9 @@ def encode_tfidf_svd(tfidf, svd, texts: list[str]) -> np.ndarray:
     return l2_normalize(Z)
 ```
 
-Why this exists:
-- Works offline.
-- No GPU dependency.
-- Gives decent lexical-semantic coverage for titles/short text.
-
-### 3) Modern text embeddings: Sentence-BERT style (served)
-Treat this as a model service with versioning and batching.
+### 2) Learned text embeddings from a served model
+**Method:** Sentence-BERT. 
+Use when semantic meaning matters, for example “office chair” vs “desk chair”.
 
 ```python
 def encode_text_sbert(texts: list[str], *, model_version: str) -> np.ndarray:
@@ -108,8 +105,9 @@ def encode_text_sbert(texts: list[str], *, model_version: str) -> np.ndarray:
     return l2_normalize(E)
 ```
 
-### 4) Minimal vision baseline: downsample + gradients (cheap sanity)
-This is not SOTA. It’s a baseline to validate plumbing and indexing.
+### 3) Simple image baseline for plumbing checks
+**Method:** Minimal vision baseline. 
+Use to validate plumbing and indexing before deploying learned models.
 
 ```python
 def encode_image_minimal(imgs: list[np.ndarray], *, out_dim: int = 128) -> np.ndarray:
@@ -123,8 +121,9 @@ def encode_image_minimal(imgs: list[np.ndarray], *, out_dim: int = 128) -> np.nd
     return l2_normalize(np.vstack(feats))
 ```
 
-### 5) Modern vision embeddings: ViT encoder (served)
-Same pattern as text: batch, version, normalize.
+### 4) Learned image embeddings from a served model
+**Method:** Vision Transformer (ViT). 
+Use when visual similarity matters, for example furniture style or color.
 
 ```python
 def encode_image_vit(img_bytes: list[bytes], *, model_version: str) -> np.ndarray:
@@ -138,8 +137,9 @@ def encode_image_vit(img_bytes: list[bytes], *, model_version: str) -> np.ndarra
     return l2_normalize(E)
 ```
 
-### 6) CLIP: joint space for text ↔ image retrieval
-CLIP is the cleanest way to align query text and item images without custom training.
+### 5) Joint text–image space
+**Method:** CLIP. 
+Use when text queries should retrieve visually similar items.
 
 ```python
 def encode_clip_text(texts: list[str], *, model_version: str) -> np.ndarray:
@@ -151,8 +151,9 @@ def encode_clip_image(img_bytes: list[bytes], *, model_version: str) -> np.ndarr
     return l2_normalize(np.asarray(E, dtype=np.float32))
 ```
 
-### 7) Item vector assembly and persistence
-Decide upfront whether you store separate modalities or one fused vector.
+### 6) Combining text and image embeddings
+**Method:** Content fusion. 
+Use when both text and images are available for the same item.
 
 ```python
 from dataclasses import dataclass
@@ -181,14 +182,17 @@ def write_embeddings(rows: list[dict]):
         embedding_store.put(item_id=r["item_id"], vec=e, version=CFG.version)
 ```
 
-## Guardrails and failure modes
-- **Version skew:** retrieval index built from content_v11 while serving uses content_v12; enforce pointer consistency.
-- **Batching bugs:** embedding services return out-of-order results; include item_id alignment checks.
-- **Normalization drift:** some backends return unnormalized vectors; enforce L2 at boundary.
-- **Missing images/text:** do not “invent” content; fall back to the available modality or mark as missing.
-- **Distribution shift:** catalog text changes (templates, spam); baselines (TF‑IDF) can degrade sharply.
+## What can go wrong and how to notice it
+- **Version skew:** retrieval index built from content_v11 while serving uses content_v12. enforce pointer consistency.
+- **Batching bugs:** embedding services return out-of-order results. include item_id alignment checks.
+- **Normalization drift:** some backends return unnormalized vectors. enforce L2 at boundary.
+- **Missing images or text:** do not invent content. fall back to the available modality or mark as missing.
+- **Distribution shift:** catalog text changes (templates, spam). baselines (TF-IDF) can degrade sharply.
 
-## Known limitations
+
+
+## Things to note
+- This component owns content embedding quality and stability.
 - Content embeddings capture similarity, not preference.
-- CLIP fusion weights are heuristic unless trained; keep them stable and versioned.
-- Encoding jobs can be expensive; plan refresh cadence and incremental updates.
+- CLIP fusion weights are heuristic unless trained. keep them stable and versioned.
+- Encoding jobs can be expensive. plan refresh cadence and incremental updates.

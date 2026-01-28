@@ -173,10 +173,9 @@ def user_cache_key(
 * **Popularity collapse:** averaging overweights popular items.
 * **Feedback loops:** embedding depends on retrieved items.
 
-This component owns user embedding correctness and stability.
 
-## What this approach does not handle well
-
+## Things to note
+* This component owns user embedding correctness and stability.
 * Averaging methods ignore fine-grained order.
 * Learned encoders increase versioning and skew risk.
 * Cold-start users still need non-embedding fallback retrieval.

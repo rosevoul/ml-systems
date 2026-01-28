@@ -4,7 +4,6 @@
 This component builds item embeddings from user behavior for retrieval.  
 For example, it learns which items are viewed or bought together.  
 It runs offline, produces versioned embedding tables, and is used by ANN retrieval.  
-It does not personalize, rank items, or apply business rules.
 
 **Methods**
 - **Co-occurrence + SVD:** deterministic embeddings from item co-occurrence.
@@ -220,10 +219,9 @@ def fuse_behavior_content(
 * **Index skew:** embeddings updated without rebuilding ANN.
 * **Silent regressions:** vectors look valid but neighbors change unexpectedly.
 
-This component owns item embedding quality and stability.
 
-## What this approach does not handle well
-
+## Things to note
+* This component owns item embedding quality and stability.
 * Exposure bias from historical data.
 * Fast distribution shifts without retraining.
 * Fusion weights are heuristic unless learned.
