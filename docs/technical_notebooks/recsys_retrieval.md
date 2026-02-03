@@ -1,213 +1,208 @@
-# Candidate Retrieval (ANN)
+# ANN Retrieval in Recommender Systems
 
-## TLDR
-This component retrieves a high-recall candidate set using ANN search. 
-For example, it finds the 200 nearest items to a query or user vector. 
-It runs on the request path and feeds ranking. 
+## TL;DR
 
-**Methods**
-- **ANN index build (HNSW):** offline index build for a specific embedding version.
-- **ANN lookup:** request-time nearest neighbor lookup.
-- **Fallback retrieval:** bounded default when ANN fails.
-- **Multi-strategy merge:** union semantic and user-profile retrieval results.
+> Candidate retrieval is the system that decides what the ranker is even allowed to see.  
+> It exists because scoring millions of items online is impossible, and it operates under stricter latency and reliability constraints than any downstream model.   
+> Approximate Nearest Neighbor (ANN) search trades exactness for bounded latency, but correctness is still real: items not retrieved are silently excluded from the product.
+
+
+**Notes**
+
+This article covers **system-level retrieval design**.  
+For lower-level mechanics and failure intuition, see the two notebooks:
+
+- **Notebook 1 — Why ANN exists**  
+  Brute force → approximation → recall@K as the real correctness metric.
+
+- **Notebook 2 — Candidate width & failures**  
+  How `k`, multi-strategy retrieval, and fallback behavior cap ranking quality.
 
 ---
 
-## What this component builds
-- Takes a query or user embedding and returns candidate item_ids plus similarity.
-- Optimizes for recall under strict latency and memory constraints.
-- Must fail open with a bounded fallback.
-
-## When this component is needed
-- Catalog is too large for brute-force scoring (10^6+ items).
-- Retrieval is on the request path with tight p95/p99 budgets.
-- Multiple retrieval strategies are unioned downstream (semantic + lexical + rules).
-- Embeddings and indices are updated regularly and need clean rollback.
-
-## How this component fits in the retrieval flow
+## System Context: Where Retrieval Fits
 
 ```
-Item embeddings (offline)
-   ↓
-ANN index build + publish (versioned)
-   ↓
-Serving: query/user embedding
-   ↓
-ANN lookup (k)
-   ↓
-Candidates (+ similarity)
-   ↓
-Merge/dedupe + post-filters
-   ↓
-Ranker
+All items (10^6 – 10^7)
+        │
+        ▼
+[ Candidate Retrieval ]
+(high recall, strict latency)
+        │
+        ▼
+Candidates (10^2 – 10^3)
+        │
+        ▼
+[ Ranking ]
+(precision, business loss)
+        │
+        ▼
+Final recommendations
 ```
 
-Retrieval emits candidates. It does not decide what is eligible or safe.
+Retrieval exists because ranking cannot operate at corpus scale under online latency budgets.
+This makes retrieval a hard gate: ranking is an optimization problem only within the retrieved set.
 
-## Inputs & Outputs
+Two consequences follow:
 
-Input (request-time):
-```json
-{
-  "embedding": [0.02, -0.11, ...],
-  "k": 200,
-  "index_version": "items_v42"
-}
+1. Ranking quality is upper-bounded by retrieval recall.
+2. Retrieval failures are often invisible, because nothing downstream can recover missing items.
+
+A strong ranker can reshuffle noise. It cannot invent candidates.
+
+
+## Offline vs Online Architecture
+
+```
+OFFLINE                                         ONLINE
+----------------------------------------------------------------
+items
+  │
+  ▼
+embeddings ──▶ ANN index (immutable, versioned) ──▶ serve index
+                                                       │
+query context ──▶ query embedding ──▶ ANN search ──▶ candidates
+                                                       │
+                                              merge / dedupe / fallback
+                                                       │
+                                                       ▼
+                                                     ranking
 ```
 
-Output:
-```json
-{
-  "candidates": [
-    {"item_id": 712, "sim": 0.83},
-    {"item_id": 45,  "sim": 0.81}
-  ],
-  "index_version": "items_v42"
-}
+Offline and online responsibilities must be cleanly separated.
+
+Offline work defines the *search space*: embeddings, index structure, versioning, and validation.
+Online work executes *bounded queries*: embedding inference, ANN lookup, and safe degradation.
+
+The ANN index is not a model in the learning sense. It is a read-only data structure, closer to a materialized view than a predictor. Its correctness is established offline and assumed online.
+
+This distinction matters for ownership, rollback strategy, and monitoring.
+
+
+
+## What ANN Is Actually Doing 
+
+```
+Brute force:
+for each item:
+    compute distance(query, item)
+
+ANN:
+partition space → navigate graph / clusters → evaluate subset
 ```
 
-## How candidate retrieval works
+Exact nearest-neighbor search scales linearly with corpus size and embedding dimensionality. This is infeasible online.
 
-### 1) Checking versions and compatibility
-**Method:** Versioned artifacts and compatibility checks. 
-Use to prevent querying the wrong index, for example when dimensions or versions mismatch.
+ANN methods approximate the neighborhood by:
 
-```python
-from dataclasses import dataclass
+* structuring the vector space
+* limiting the number of distance computations
+* bounding worst-case latency
 
-@dataclass(frozen=True)
-class IndexMeta:
-    index_version: str
-    embedding_version: str
-    dim: int
-    space: str  # "cosine" or "l2"
+The correctness question is not *“did we find the true nearest neighbor?”*
+It is *“did the right items survive into the candidate set?”*
 
-def assert_compatible(meta: IndexMeta, query_vec):
-    if meta.dim != int(query_vec.shape[-1]):
-        raise ValueError(f"dim mismatch: index={meta.dim} query={query_vec.shape[-1]}")
+This is why retrieval is evaluated with **recall@K against a brute-force baseline**, not prediction loss.
+
+
+## Brute-Force comparisons
+**Exact search on a large fixed subset**
+- Offline job.
+- Sample 100k–1M representative items.
+- Compute exact similarities within the subset.
+- Use when full-corpus brute force is too expensive.
+
+**Exact search with relaxed constraints**
+- Offline job on the full corpus.
+- Same embeddings and distance metric.
+- No latency limits, higher memory usage.
+- Typically run periodically (e.g. daily validation).
+
+**Historical positive inclusion (weak proxy)**
+- Check whether clicked or purchased items appear in retrieved top-K.
+- Useful for online monitoring, not a true brute-force reference.
+
+
+## Candidate Width and Search Budget
+
+Two knobs dominate ANN behavior.
+
+Candidate width (`k`) controls how many items survive retrieval.
+Search budget (`ef`, probes, graph expansion) controls how hard the index works to find them.
+
+If `k` is too small, the ranker is starved and downstream models saturate early.
+If `k` is too large, latency rises and noise dilutes ranking signal.
+
+Search budget trades latency predictability for recall. The correct operating point is rarely at maximum recall. It is just before the p99 latency curve bends upward.
+
+These parameters should be tuned *for ranking outcomes*, not in isolation.
+
+
+
+## Multi-Strategy Retrieval Is the Default, Not an Optimization
+
+No single embedding space covers all product states.
+
+```
+                 Behavioral ANN
+                        │
+                        ▼
+Query ──▶ Content ANN ──┼──▶ Union → Dedupe → Ranking
+                        ▲
+                        │
+                 Popular / Recency
 ```
 
-### 2) Building the ANN index offline
-**Method:** ANN index build (HNSW). 
-Offline, deterministic index build for a specific embedding version.
+Behavioral signals dominate when history is rich.
+Content signals rescue cold start and novelty.
+Heuristics guarantee coverage under failure.
 
-```python
-import hnswlib
-import numpy as np
+The goal is not purity. It is coverage under uncertainty.
 
-def build_hnsw_index(item_ids: np.ndarray,
-                     item_vecs: np.ndarray,
-                     meta: IndexMeta,
-                     M: int = 16,
-                     ef_construction: int = 200):
-    index = hnswlib.Index(space=meta.space, dim=meta.dim)
-    index.init_index(max_elements=len(item_ids), ef_construction=ef_construction, M=M)
-    index.add_items(item_vecs, item_ids)
-    return index
-```
-
-### 3) Publishing and rolling back safely
-**Method:** Publish + rollback via pointer switch. 
-Use to treat indices as immutable and roll back by switching versions.
-
-```python
-def publish_index(index, meta: IndexMeta):
-    path = f"/indices/{meta.index_version}/index.bin"
-    index.save_index(path)
-    write_json(f"/indices/{meta.index_version}/meta.json", meta.__dict__)
-    # Production: atomic pointer update (e.g., service discovery, config store)
-```
-
-### 4) Serving configuration
-**Method:** Retrieval config (k, ef_runtime, timeouts). 
-Use to control latency and recall without changing build settings.
-
-```python
-from dataclasses import dataclass
-
-@dataclass(frozen=True)
-class RetrievalConfig:
-    k: int = 200
-    ef_runtime: int = 100
-    min_candidates: int = 50
-    timeout_ms: int = 30  # retrieval must be fast
-    hard_fail_open: bool = True
-
-RCFG = RetrievalConfig()
-```
-
-### 5) Doing ANN lookup at request time
-**Method:** ANN lookup. 
-Use to retrieve candidates under tight latency budgets.
-
-```python
-def ann_lookup(index, meta: IndexMeta, query_vec, cfg: RetrievalConfig = RCFG):
-    assert_compatible(meta, query_vec)
-    index.set_ef(cfg.ef_runtime)
-
-    ids, sims = index.knn_query(query_vec, k=cfg.k)
-    ids = ids[0].tolist()
-    sims = sims[0].tolist()
-
-    if len(ids) == 0 or len(ids) < cfg.min_candidates:
-        raise RuntimeError("too_few_candidates")
-
-    return ids, sims
-```
-
-### 6) What to do when ANN lookup fails
-**Method:** Fallback retrieval. 
-Use when ANN errors or returns too few candidates.
-
-```python
-def fallback_candidates(limit: int = 200) -> list[int]:
-    return popular_items(limit)
-
-def retrieve_candidates(index, meta, query_vec, cfg: RetrievalConfig = RCFG) -> list[int]:
-    try:
-        ids, _sims = ann_lookup(index, meta, query_vec, cfg=cfg)
-        return ids
-    except Exception as e:
-        log.warning("retrieval_fallback", extra={"err": str(e), "index_version": meta.index_version})
-        return fallback_candidates(limit=cfg.k)
-```
-
-### 7) Combining multiple retrieval strategies
-**Method:** Multi-strategy merge. 
-Use when you union semantic and user-profile retrieval before ranking.
-
-```python
-def dedupe_keep_order(ids: list[int]) -> list[int]:
-    seen = set()
-    out = []
-    for x in ids:
-        if x in seen:
-            continue
-        seen.add(x)
-        out.append(x)
-    return out
-
-def retrieve_multi(query_vec, user_vec, index_map, meta_map, cfg: RetrievalConfig = RCFG) -> list[int]:
-    all_ids = []
-
-    all_ids.extend(retrieve_candidates(index_map["query"], meta_map["query"], query_vec, cfg=cfg))
-
-    if user_vec is not None:
-        all_ids.extend(retrieve_candidates(index_map["user"], meta_map["user"], user_vec, cfg=cfg))
-
-    return dedupe_keep_order(all_ids)[: cfg.k]
-```
-
-## What can go wrong and how to notice it
-- **Index/version mismatch:** returns plausible but wrong neighbors. enforce meta checks.
-- **Silent recall drift:** traffic mix changes. ANN recall degrades without errors.
-- **Latency creep:** ef_runtime tuned too high. p99 blows up under load.
-- **Partial index build:** missing shards/items. quality collapses in specific segments.
-- **Over-reliance on similarity:** downstream treats sims as relevance. keep contracts explicit.
+Noise introduced here is acceptable. Missing candidates are not.
 
 
-## Things to note
-- This component owns candidate recall and retrieval stability.
-- Approximate by design. exact nearest neighbors are not guaranteed.
-- Requires workload-specific tuning (k, ef, M).
-- Debugging is harder than brute-force baselines. keep a brute-force evaluator offline.
+
+## Fallback Is a Product Requirement
+
+Retrieval must always return something.
+
+Index outages, embedding failures, and sparse contexts are normal operating conditions, not edge cases. Systems that assume otherwise ship fragile products.
+
+Fallbacks mean degrading gracefully to safe candidate sources such as popularity, recency, or cached results, when the main retrieval path fails.
+
+Important: fallback paths must be exercised in testing. Untested fallbacks are equivalent to no fallback.
+
+
+
+
+## Evaluation: Treat Retrieval as Infrastructure
+
+### Offline evaluation 
+
+| Metric                          | What it measures                                    | Good (typical)                        | Bad (warning)                           |
+| ------------------------------- | --------------------------------------------------- | ------------------------------------- | --------------------------------------- |
+| **Recall@K (vs brute force)**   | Fraction of true top-K items that survive retrieval | ≥ 0.90–0.97 at K=100                  | < 0.80 or drops > 5–10% between builds  |
+| **Segment-level coverage**      | Candidate availability across user/item segments    | ≥ 95% of segments with ≥ K candidates | Cold or tail segments < 80% coverage    |
+| **Embedding drift sensitivity** | Recall stability under embedding updates            | < 2–3% recall change                  | > 5–10% recall loss from minor retrains |
+
+Offline metrics answer: *Is this retrieval setup capable of supporting ranking at all?*
+They define an upper bound, not production safety.
+
+
+### Online evaluation
+
+| Metric                        | What it measures                          | Good (typical)            | Bad (paging-worthy)                    |
+| ----------------------------- | ----------------------------------------- | ------------------------- | -------------------------------------- |
+| **p95 / p99 latency**         | Tail latency of retrieval calls           | p95 < 50 ms, p99 < 100 ms | p99 > 150–200 ms or unstable tails     |
+| **Candidate count stability** | Number of candidates returned per request | Tight band (e.g. 300–500) | Collapses < 50 or spikes > 2× baseline |
+| **Downstream ranking deltas** | Ranking metrics after retrieval changes   | ± 0–1% (explainable)      | −2–5% with no ranker changes           |
+
+Online metrics answer: *Is retrieval safe and predictable under real traffic?*
+
+
+
+On a final note, retrieval is not judged by AUC or loss.
+It is judged by whether it reliably supplies ranking with a viable search space under load.
+
+Many ranking regressions originate in retrieval changes that looked acceptable offline but violated online safety thresholds.
