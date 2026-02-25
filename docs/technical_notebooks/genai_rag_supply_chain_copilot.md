@@ -1,8 +1,5 @@
 ---
-title: "Hybrid RAG Supply Chain Copilot (FAISS + Local Llama): deterministic risk, grounded explanations"
-
-
-# Hybrid RAG Supply Chain Copilot: from a messy question to an auditable answer
+# Hybrid RAG Supply Chain Copilot (FAISS + Local Llama): deterministic risk, grounded explanations
 
 A planner asks a simple question:
 
