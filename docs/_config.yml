@@ -5,7 +5,7 @@ theme: jekyll-theme-slate
 
 # Project site settings 
 url: "https://rosevoul.github.io"
-baseurl: "/ml-systems"
+baseurl: "/ai-ml-systems"
 
 markdown: kramdown
 kramdown:
