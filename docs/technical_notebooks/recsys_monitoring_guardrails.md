@@ -158,6 +158,7 @@ if ctr_treatment - ctr_control < -0.005 and latency_p95_ok and empty_rate_ok:
 - **Bad:** Drops correlated with score collapse or ranking metric decay.
 - **Interacts with:** fallback rate, score distribution, ranking metric, latency (feature store timeouts).
 
+
 ```python
 REQUIRED = ["user_tenure_days", "item_category", "price", "recent_views_7d"]
 
