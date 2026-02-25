@@ -18,6 +18,12 @@ I’ve shipped end-to-end ML systems, from data pipelines and modeling to deploy
 <a id="selected-technical-notes"></a>
 ## Selected Technical Notes
 
+### GenAI Systems in Production
+
+**RAG Supply Chain Copilot**  
+Hybrid RAG copilot that computes stockout risk deterministically and generates validated, evidence-backed explanations with an LLM.  
+[RAG Copilot](technical_notebooks/genai_rag_supply_chain_copilot.md)
+
 ### Recommender Systems in Production
 
 **Embeddings**  
