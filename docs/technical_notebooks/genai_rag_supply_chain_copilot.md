@@ -316,7 +316,7 @@ a model returns something readable, but not machine-usable.
 ## Source code
 The accompanying notebook contains the full runnable pipeline.
 
-**Notebook:** https://github.com/rosevoul/ai-ml-systems/blob/main/docs/notebooks/genai_rag_supply_chain_copilot.ipynb
+**Notebook:** https://github.com/rosevoul/ai-ml-systems/blob/main/docs/technical_notebooks/genai_rag_supply_chain_copilot.ipynb
 
 
 ## Changes needed for production
