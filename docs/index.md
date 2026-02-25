@@ -12,7 +12,7 @@ My focus is on:
 - Choosing the appropriate level of complexity for the problem  
 - Making trade-offs, uncertainty, and failure modes explicit  
 
-I’ve shipped end-to-end ML systems, from data pipelines and modeling to deployment, monitoring, and iteration, with direct ownership of production metrics. In recent work, I owned multiple production ML systems that drove measurable lift in engagement and tens of millions in incremental revenue.
+I’ve shipped end-to-end ML systems, from data pipelines and modeling to deployment, monitoring, and iteration, with direct ownership of production metrics. In recent work, I owned multiple production ML systems that drove measurable lift in engagement and hundreds of millions in incremental revenue.
 
 
 <a id="selected-technical-notes"></a>
