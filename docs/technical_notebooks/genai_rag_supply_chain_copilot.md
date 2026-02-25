@@ -64,13 +64,13 @@ Hybrid retrieval keeps structured logic dominant while still recovering human co
 
 ## The GenAI component (what the LLM actually does)
 
-The LLM does **not** compute risk.
-The LLM does **not** decide the ranking.
+The LLM does not compute risk.
+The LLM does not decide the ranking.
 
 The LLM is used only for:
 
 - Turning deterministic risk + evidence into a short explanation.
-- Producing **UI-ready JSON** that can be validated.
+- Producing UI-ready JSON that can be validated.
 
 This keeps business logic stable and makes the model replaceable.
 
