@@ -3,14 +3,12 @@ title: "Faye Voulivasi"
 description: "Applied ML · Ranking & Personalization · Scalable Decision Systems"
 theme: jekyll-theme-slate
 
-# Project site settings (IMPORTANT for /rec-ml-notes/)
+# Project site settings 
 url: "https://rosevoul.github.io"
-baseurl: "/rec-ml-notes"
+baseurl: "/ml-systems"
 
-# Nice-to-have defaults
 markdown: kramdown
 kramdown:
   input: GFM
 
-# Optional: reduce noise
 plugins: []
